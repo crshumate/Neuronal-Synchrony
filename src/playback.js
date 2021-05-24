@@ -49,7 +49,7 @@ class PlaybackGenerator {
   startRecording = () => {
     //if recording already return we don't want to double record
     //user accidentially clicks a second time after recording a few
-   if (this.isRecording) return;
+    if (this.isRecording) return;
     this.start = new Date().getTime();
     this.isRecording = true;
     if (this.recording.length) {
@@ -84,7 +84,11 @@ class PlaybackGenerator {
     this.recording.push({ ctx, buffer, delay: now - this.start });
   };
   stopPlayback = () => {
+    this.updateStatus("Stopping Playback...");
     this.playbackActive = false;
+    setTimeout(() => {
+      this.updateStatus("Playback stopped...");
+    }, 1000);
   };
   playback = () => {
     this.updateStatus("Playback");
@@ -94,6 +98,9 @@ class PlaybackGenerator {
       setTimeout(() => {
         if (this.playbackActive) {
           this.playsound({ ctx, buffer });
+          if (i === this.recording.length - 1) {
+            this.updateStatus("Playback finished");
+          }
         }
       }, delay);
     }
@@ -156,19 +163,39 @@ class PlaybackGenerator {
   init = () => {
     this.body = document.querySelector("body");
     window.addEventListener("keydown", (e) => {
-      if (e.key === "1") {
-        this.startRecording();
-      } else if (e.key === "2") {
-        this.stopRecording();
-      } else if (e.key === "5") {
-        this.stopRecording();
-        this.playback();
-      } else if (e.key === "9") {
-        this.reset();
+      switch (e.key) {
+        case "1":
+          console.log("YIP");
+          this.startRecording();
+          break;
+        case "2":
+          this.stopRecording();
+          break;
+        case "5":
+          this.playback();
+          break;
+        case "6":
+          this.stopPlayback();
+          break;
+        case "9":
+          this.reset();
+          break;
+        default:
+          break;
       }
+      //   if (e.key === "1") {
+      //     this.startRecording();
+      //   } else if (e.key === "2") {
+      //     this.stopRecording();
+      //   } else if (e.key === "5") {
+      //     this.stopRecording();
+      //     this.playback();
+      //   } else if (e.key === "9") {
+      //     this.reset();
+      //   }
     });
     this.controls();
-    this.updateStatus("Waiting....");
+    this.updateStatus("Please select an option...");
   };
 }
 const Playback = new PlaybackGenerator();
