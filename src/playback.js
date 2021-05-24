@@ -10,42 +10,7 @@ class PlaybackGenerator {
       this.init();
     });
   }
-  //   let body,
-  //     start = null,
-  //     isRecording = false;
-  //   let recording = [];
-  //   let mapping = {
-  //     //q - p
-  //     q: 81,
-  //     w: 87,
-  //     e: 69,
-  //     r: 82,
-  //     t: 84,
-  //     y: 89,
-  //     u: 85,
-  //     i: 73,
-  //     o: 79,
-  //     p: 80,
-  //     //a - l
-  //     a: 65,
-  //     s: 83,
-  //     d: 68,
-  //     f: 70,
-  //     g: 71,
-  //     h: 72,
-  //     j: 74,
-  //     k: 75,
-  //     l: 76,
-  //     //z - m
-  //     z: 90,
-  //     x: 88,
-  //     c: 67,
-  //     v: 86,
-  //     b: 66,
-  //     n: 78,
-  //     m: 77,
-  //   };
-
+  
   startRecording = () => {
     //if recording already return we don't want to double record
     //user accidentially clicks a second time after recording a few
@@ -79,7 +44,6 @@ class PlaybackGenerator {
     this.updateStatus("Reset");
   };
   addEntry = ({ ctx, buffer }) => {
-    if (!this.isRecording) return;
     let now = new Date().getTime();
     this.recording.push({ ctx, buffer, delay: now - this.start });
   };
@@ -95,15 +59,19 @@ class PlaybackGenerator {
     this.playbackActive = true;
     for (let i = 0; i < this.recording.length; i++) {
       const { ctx, buffer, delay } = this.recording[i];
+      let done = this.isRecordingFinished({ arr: this.recording, idx: i });
       setTimeout(() => {
         if (this.playbackActive) {
           this.playsound({ ctx, buffer });
-          if (i === this.recording.length - 1) {
+          if (done) {
             this.updateStatus("Playback finished");
           }
         }
       }, delay);
     }
+  };
+  isRecordingFinished = ({ arr, idx }) => {
+    return idx === arr.length - 1;
   };
   playsound = ({ ctx, buffer }) => {
     let source = ctx.createBufferSource();
@@ -119,7 +87,6 @@ class PlaybackGenerator {
       p = document.createElement("p");
       p.id = "recordingStatus";
     }
-
     p.innerText = `Status: ${status}`;
     this.positionElem(p);
     this.body.prepend(p);
@@ -165,7 +132,6 @@ class PlaybackGenerator {
     window.addEventListener("keydown", (e) => {
       switch (e.key) {
         case "1":
-          console.log("YIP");
           this.startRecording();
           break;
         case "2":
@@ -183,16 +149,6 @@ class PlaybackGenerator {
         default:
           break;
       }
-      //   if (e.key === "1") {
-      //     this.startRecording();
-      //   } else if (e.key === "2") {
-      //     this.stopRecording();
-      //   } else if (e.key === "5") {
-      //     this.stopRecording();
-      //     this.playback();
-      //   } else if (e.key === "9") {
-      //     this.reset();
-      //   }
     });
     this.controls();
     this.updateStatus("Please select an option...");
