@@ -47,6 +47,9 @@ class PlaybackGenerator {
   //   };
 
   startRecording = () => {
+    //if recording already return we don't want to double record
+    //user accidentially clicks a second time after recording a few
+   if (this.isRecording) return;
     this.start = new Date().getTime();
     this.isRecording = true;
     if (this.recording.length) {
